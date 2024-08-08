@@ -1,3 +1,13 @@
 flask==2.2.2
 Werkzeug==2.3.7
+<<<<<<< Updated upstream
 line-bot-sdk
+=======
+line-bot-sdk
+<<<<<<< Updated upstream
+openai
+=======
+gspread
+google-auth
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes

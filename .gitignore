@@ -9,5 +9,7 @@ __pycache__
 env/ 
 venv/ 
 ENV/ 
+secrets/
 env.bak/ 
 venv.bak/ 
+.vscode
