@@ -1,5 +1,4 @@
 import json
-from dotenv import load_dotenv
 import gspread
 from google.oauth2.service_account import Credentials
 
@@ -12,7 +11,6 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage, FlexSendM
 
 import os
 
-load_dotenv()
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 
 cred_json = json.loads(os.getenv("SERVICE_ACC_SECRET"))
