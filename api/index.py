@@ -37,18 +37,34 @@ def create_flex_message(type):
             contents=[
                 TextComponent(text=type, weight='bold', size='xl'),
                 ButtonComponent(
-                    action=PostbackAction(label='簽到！', data='c:1', display_text='我已簽到'),
-                    style='primary'
+                    action=PostbackAction(label='簽到！', data='a:1&c:1', display_text='我已簽到'),
+                    style='primary',
+                    spacing='md'
                 ),
                 ButtonComponent(
-                    action=PostbackAction(label='我下次再來～', data='c:0', display_text='下次見！'),
-                    style='secondary'
+                    action=PostbackAction(label='我下次再來～', data='a:1&c:0', display_text='下次見！'),
+                    style='secondary',
+                    spacing='md'
                 )
             ]
         )
     )
     flex_message = FlexSendMessage(alt_text='This is a Flex Message', contents=bubble)
     return flex_message
+
+
+def parse_data(input_string):
+    # Split the string by '&' to get key-value pairs
+    pairs = input_string.split('&')
+
+    # Create a dictionary from the key-value pairs
+    result = {}
+    for pair in pairs:
+        key, value = pair.split(':')
+        result[key] = int(value)
+
+    return result
+
 
 # domain root
 @app.route('/')
@@ -93,9 +109,9 @@ def handle_postback(event):
     # Here you can process the postback data, like recording who clicked the button
     print(f"User {user_id} clicked a button with data: {data}")
 
-    parsed_data = parse_qs(data)
+    parsed_data = parse_data(data)
     print(parsed_data)
-    counter = parsed_data.get('c', [''])[0]
+    counter = parsed_data.get('c')
 
     # You can also send a response back to the user if needed
     if counter == '1':
