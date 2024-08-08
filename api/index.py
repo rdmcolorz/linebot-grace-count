@@ -1,3 +1,4 @@
+import os
 import json
 import gspread
 from google.oauth2.service_account import Credentials
@@ -6,10 +7,13 @@ from flask import Flask, request, abort
 
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage, FlexSendMessage, BubbleContainer, BoxComponent, TextComponent, ButtonComponent, URIAction
+from linebot.models import MessageEvent, TextMessage, \
+    TextSendMessage, FlexSendMessage, BubbleContainer, \
+    BoxComponent, TextComponent, ButtonComponent, \
+    PostbackAction, PostbackEvent
 
-
-import os
+# from dotenv import load_dotenv
+# load_dotenv()
 
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 
@@ -32,7 +36,12 @@ def create_flex_message(type):
             contents=[
                 TextComponent(text=type, weight='bold', size='xl'),
                 ButtonComponent(
-                    action=URIAction(label='Go to Website', uri='https://google.com')
+                    action=PostbackAction(label='簽到！', data='c:1', display_text='我已簽到'),
+
+                ),
+                ButtonComponent(
+                    action=PostbackAction(label='我下次再來～', data='c:0', display_text='下次見！'),
+                    
                 )
             ]
         )
@@ -74,13 +83,24 @@ def handle_message(event):
         )
         return
 
-    # if working_status:
-    #     chatgpt.add_msg(f"HUMAN:{event.message.text}?\n")
-    #     reply_msg = chatgpt.get_response().replace("AI:", "", 1)
-    #     chatgpt.add_msg(f"AI:{reply_msg}\n")
-    #     line_bot_api.reply_message(
-    #         event.reply_token,
-    #         TextSendMessage(text=reply_msg))
+@line_handler.add(PostbackEvent)
+def handle_postback(event):
+    # Get data sent with postback
+    data = event.postback.data
+    user_id = event.source.user_id
+
+    profile = line_bot_api.get_profile(user_id)
+    user_name = profile.display_name
+
+    # Here you can process the postback data, like recording who clicked the button
+    print(f"User {user_id} clicked a button with data: {data}")
+
+    # You can also send a response back to the user if needed
+    if data.c == '1':
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=f"{user_name} 已獲得恩典～")
+        )
 
 
 if __name__ == "__main__":
