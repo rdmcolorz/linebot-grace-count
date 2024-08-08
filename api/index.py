@@ -1,6 +1,7 @@
 import os
 import json
 import gspread
+from urllib.parse import parse_qs
 from google.oauth2.service_account import Credentials
 
 from flask import Flask, request, abort
@@ -95,8 +96,10 @@ def handle_postback(event):
     # Here you can process the postback data, like recording who clicked the button
     print(f"User {user_id} clicked a button with data: {data}")
 
+    parsed_data = parse_qs(data)
+    counter = parsed_data.get('c', [''])[0]
     # You can also send a response back to the user if needed
-    if data.c == '1':
+    if counter == '1':
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=f"{user_name} 已獲得恩典～")
