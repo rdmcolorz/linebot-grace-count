@@ -114,7 +114,7 @@ def handle_postback(event):
     counter = parsed_data.get('c')
 
     # You can also send a response back to the user if needed
-    if counter == '1':
+    if counter == 1:
         profile = line_bot_api.get_profile(user_id)
         user_name = profile.display_name
         line_bot_api.reply_message(
