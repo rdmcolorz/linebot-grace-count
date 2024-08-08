@@ -34,17 +34,16 @@ def create_flex_message(type):
         direction='ltr',
         body=BoxComponent(
             layout='vertical',
+            spacing='md',
             contents=[
                 TextComponent(text=type, weight='bold', size='xl'),
                 ButtonComponent(
                     action=PostbackAction(label='簽到！', data='a:1&c:1', display_text='我已簽到'),
-                    style='primary',
-                    spacing='md'
+                    style='primary'
                 ),
                 ButtonComponent(
                     action=PostbackAction(label='我下次再來～', data='a:1&c:0', display_text='下次見！'),
-                    style='secondary',
-                    spacing='md'
+                    style='secondary'
                 )
             ]
         )
