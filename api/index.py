@@ -38,11 +38,11 @@ def create_flex_message(type):
                 TextComponent(text=type, weight='bold', size='xl'),
                 ButtonComponent(
                     action=PostbackAction(label='簽到！', data='c:1', display_text='我已簽到'),
-
+                    style='primary'
                 ),
                 ButtonComponent(
                     action=PostbackAction(label='我下次再來～', data='c:0', display_text='下次見！'),
-                    
+                    style='secondary'
                 )
             ]
         )
@@ -80,7 +80,7 @@ def handle_message(event):
         working_status = True
         line_bot_api.reply_message(
             event.reply_token,
-            create_flex_message("prayer_meeting")
+            create_flex_message("週二 禱告聚會")
         )
         return
 
@@ -90,16 +90,17 @@ def handle_postback(event):
     data = event.postback.data
     user_id = event.source.user_id
 
-    profile = line_bot_api.get_profile(user_id)
-    user_name = profile.display_name
-
     # Here you can process the postback data, like recording who clicked the button
     print(f"User {user_id} clicked a button with data: {data}")
 
     parsed_data = parse_qs(data)
+    print(parsed_data)
     counter = parsed_data.get('c', [''])[0]
+
     # You can also send a response back to the user if needed
     if counter == '1':
+        profile = line_bot_api.get_profile(user_id)
+        user_name = profile.display_name
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=f"{user_name} 已獲得恩典～")
