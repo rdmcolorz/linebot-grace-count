@@ -38,7 +38,7 @@ def create_flex_message(event, event_id):
                 TextComponent(text=event, weight='bold', size='xl'),
                 ButtonComponent(
                     action=PostbackAction(
-                        label='簽到！',
+                        label='我來了！',
                         data=f'event:{event_id}&attend:TRUE',
                         # display_text='已簽到！',
                         size='lg'
