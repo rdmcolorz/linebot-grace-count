@@ -101,6 +101,21 @@ def handle_message(event):
     if event.message.type != "text":
         return
 
+
+    if event.message.text == "點名 主日":
+        working_status = True
+        line_bot_api.reply_message(
+            event.reply_token,
+            create_flex_message("主日聚會", 'C')
+        )
+        return
+    if event.message.text == "點名 小排":
+        working_status = True
+        line_bot_api.reply_message(
+            event.reply_token,
+            create_flex_message("週三/四 小排聚會", 'D')
+        )
+        return
     if event.message.text == "點名 禱告聚會":
         working_status = True
         line_bot_api.reply_message(
@@ -108,20 +123,7 @@ def handle_message(event):
             create_flex_message("週二 禱告聚會", 'G')
         )
         return
-    if event.message.text == "點名 小排":
-        working_status = True
-        line_bot_api.reply_message(
-            event.reply_token,
-            create_flex_message("週二 禱告聚會", 'D')
-        )
-        return
-    if event.message.text == "點名 主日":
-        working_status = True
-        line_bot_api.reply_message(
-            event.reply_token,
-            create_flex_message("主日聚會簽到", 'C')
-        )
-        return
+
 
 @line_handler.add(PostbackEvent)
 def handle_postback(event):
@@ -134,13 +136,19 @@ def handle_postback(event):
     attend = parsed_data.get('attend')
     event_id = parsed_data['event']
 
+    event_map = {
+        "C": "主日聚會",
+        "D": "禱告聚會",
+        "G": "小排聚會"
+    }
+
     profile = line_bot_api.get_group_member_profile(group_id, user_id)
     user_name = profile.display_name
     update_gsheet_checkbox(user_name, event_id, attend)
     if attend == 'TRUE':
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text=f"{user_name} 已獲得恩典～")
+            TextSendMessage(text=f"{user_name} 已於 {event_map[event_id]} 簽到！")
         )
 
 
@@ -181,9 +189,13 @@ def update_gsheet_checkbox(name, event, attend):
         "張尚恩榮": "41",
         "曾慕華": "42"
     }
-    spreadsheet = client.open_by_key(sheet_key)
-    sheet = spreadsheet.worksheet(sheet_name)
-    sheet.update_acell(f"{event}{name_map[name]}", attend)
+    name_id = name_map.get(name)
+    if name_id:
+        spreadsheet = client.open_by_key(sheet_key)
+        sheet = spreadsheet.worksheet(sheet_name)
+        sheet.update_acell(f"{event}{name_id}", attend)
+    else:
+        app.logging.error(f'{name} doesnt have name_id, please add to mapping')
 
 if __name__ == "__main__":
     app.run()
