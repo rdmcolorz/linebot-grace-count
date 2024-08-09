@@ -40,7 +40,7 @@ def create_flex_message(event, event_id):
                     action=PostbackAction(
                         label='簽到！',
                         data=f'event:{event_id}&attend:TRUE',
-                        display_text='已簽到！',
+                        # display_text='已簽到！',
                         size='lg'
                     ),
                     style='primary'
@@ -49,7 +49,7 @@ def create_flex_message(event, event_id):
                     action=PostbackAction(
                         label='我下次再來～',
                         data=f'event:{event_id}&attend:FALSE',
-                        display_text='下次來～！',
+                        # display_text='下次來～！',
                         size='lg'
                     ),
                     style='secondary'
@@ -148,7 +148,7 @@ def handle_postback(event):
     if attend == 'TRUE':
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text=f"{user_name} 已於 {event_map[event_id]} 簽到！")
+            TextSendMessage(text=f"{user_name}來到{event_map[event_id]}了～")
         )
 
 
