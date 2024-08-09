@@ -38,11 +38,11 @@ def create_flex_message(type):
             contents=[
                 TextComponent(text=type, weight='bold', size='xl'),
                 ButtonComponent(
-                    action=PostbackAction(label='簽到！', data='a:1&c:1', display_text='我已簽到'),
+                    action=PostbackAction(label='簽到！', data='a:1&c:1', display_text='已簽到！'),
                     style='primary'
                 ),
                 ButtonComponent(
-                    action=PostbackAction(label='我下次再來～', data='a:1&c:0'),
+                    action=PostbackAction(label='我下次再來～', data='a:1&c:0', display_text='下次來～！'),
                     style='secondary'
                 )
             ]
@@ -116,7 +116,7 @@ def handle_postback(event):
     # You can also send a response back to the user if needed
     if counter == 1:
         attend = 'TRUE'
-        profile = line_bot_api.get_group_member_profile(user_id, group_id)
+        profile = line_bot_api.get_group_member_profile(group_id, user_id)
         user_name = profile.display_name
         update_gsheet_checkbox(user_name, 'D', attend)
         line_bot_api.reply_message(
