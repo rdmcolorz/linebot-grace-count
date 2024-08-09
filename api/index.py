@@ -1,7 +1,6 @@
 import os
 import json
 import gspread
-from urllib.parse import parse_qs
 from google.oauth2.service_account import Credentials
 
 from flask import Flask, request, abort
@@ -163,7 +162,7 @@ def update_gsheet_checkbox(name, event, attend):
     }
     spreadsheet = client.open_by_key(sheet_key)
     sheet = spreadsheet.worksheet(sheet_name)
-    sheet.update(f"{event}{name_map[name]}", attend)
+    sheet.update_acell(f"{event}{name_map[name]}", attend)
 
 if __name__ == "__main__":
     app.run()

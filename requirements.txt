@@ -1,7 +1,5 @@
 flask==2.2.2
 Werkzeug==2.3.7
 line-bot-sdk
-line-bot-sdk
-openai
 gspread
 google-auth
