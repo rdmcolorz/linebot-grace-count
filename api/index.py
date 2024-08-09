@@ -132,11 +132,11 @@ def handle_postback(event):
 
     parsed_data = parse_data(data)
     attend = parsed_data.get('attend')
-    event = parsed_data['event']
+    event_id = parsed_data['event']
 
     profile = line_bot_api.get_group_member_profile(group_id, user_id)
     user_name = profile.display_name
-    update_gsheet_checkbox(user_name, event, attend)
+    update_gsheet_checkbox(user_name, event_id, attend)
     if attend == 'TRUE':
         line_bot_api.reply_message(
             event.reply_token,
