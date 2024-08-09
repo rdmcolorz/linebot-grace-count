@@ -71,7 +71,7 @@ def parse_data(input_string):
     result = {}
     for pair in pairs:
         key, value = pair.split(':')
-        result[key] = int(value)
+        result[key] = value
     return result
 
 
