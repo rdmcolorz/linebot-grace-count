@@ -28,26 +28,38 @@ working_status = os.getenv("DEFALUT_TALKING", default = "true").lower() == "true
 
 app = Flask(__name__)
 
-def create_flex_message(type):
+def create_flex_message(event, event_id):
     bubble = BubbleContainer(
         direction='ltr',
         body=BoxComponent(
             layout='vertical',
-            spacing='md',
+            spacing='xl',
             contents=[
-                TextComponent(text=type, weight='bold', size='xl'),
+                TextComponent(text=event, weight='bold', size='xl'),
                 ButtonComponent(
-                    action=PostbackAction(label='簽到！', data='a:1&c:1', display_text='已簽到！'),
+                    action=PostbackAction(
+                        label='簽到！',
+                        data=f'event:{event_id}&attend:TRUE',
+                        display_text='已簽到！',
+                        size='lg'
+                    ),
                     style='primary'
                 ),
                 ButtonComponent(
-                    action=PostbackAction(label='我下次再來～', data='a:1&c:0', display_text='下次來～！'),
+                    action=PostbackAction(
+                        label='我下次再來～',
+                        data=f'event:{event_id}&attend:FALSE',
+                        display_text='下次來～！',
+                        size='lg'
+                    ),
                     style='secondary'
                 )
             ]
         )
     )
-    flex_message = FlexSendMessage(alt_text='This is a Flex Message', contents=bubble)
+    flex_message = FlexSendMessage(
+        alt_text='恩典點名', contents=bubble
+    )
     return flex_message
 
 
@@ -60,7 +72,6 @@ def parse_data(input_string):
     for pair in pairs:
         key, value = pair.split(':')
         result[key] = int(value)
-
     return result
 
 
@@ -90,11 +101,25 @@ def handle_message(event):
     if event.message.type != "text":
         return
 
-    if event.message.text == "點名":
+    if event.message.text == "點名 禱告聚會":
         working_status = True
         line_bot_api.reply_message(
             event.reply_token,
-            create_flex_message("週二 禱告聚會")
+            create_flex_message("週二 禱告聚會", 'G')
+        )
+        return
+    if event.message.text == "點名 小排":
+        working_status = True
+        line_bot_api.reply_message(
+            event.reply_token,
+            create_flex_message("週二 禱告聚會", 'D')
+        )
+        return
+    if event.message.text == "點名 主日":
+        working_status = True
+        line_bot_api.reply_message(
+            event.reply_token,
+            create_flex_message("主日聚會簽到", 'C')
         )
         return
 
@@ -105,23 +130,19 @@ def handle_postback(event):
     group_id = event.source.group_id
     user_id = event.source.user_id
 
-    # Here you can process the postback data, like recording who clicked the button
-    print(f"User {user_id} clicked a button with data: {data}")
-
     parsed_data = parse_data(data)
-    print(parsed_data)
-    counter = parsed_data.get('c')
+    attend = parsed_data.get('attend')
+    event = parsed_data['event']
 
-    # You can also send a response back to the user if needed
-    if counter == 1:
-        attend = 'TRUE'
-        profile = line_bot_api.get_group_member_profile(group_id, user_id)
-        user_name = profile.display_name
-        update_gsheet_checkbox(user_name, 'D', attend)
+    profile = line_bot_api.get_group_member_profile(group_id, user_id)
+    user_name = profile.display_name
+    update_gsheet_checkbox(user_name, event, attend)
+    if attend == 'TRUE':
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=f"{user_name} 已獲得恩典～")
         )
+
 
 def update_gsheet_checkbox(name, event, attend):
     sheet_key = '1wMN8njXEchf9-GedPcsz0eKCvJpYUBxaHPUelBdamKQ'
