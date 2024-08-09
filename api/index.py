@@ -156,9 +156,9 @@ def update_gsheet_checkbox(name, event, attend):
     sheet_key = '1wMN8njXEchf9-GedPcsz0eKCvJpYUBxaHPUelBdamKQ'
     sheet_name = 'grace'
     name_map = {
-        "陳建霖": "2",
+        "daniel": "2",
         "柯建伸": "3",
-        "李濤亦": "4",
+        "David Lee": "4",
         "曾木宣": "5",
         "楊光宇": "6",
         "李成新": "7",
@@ -171,22 +171,22 @@ def update_gsheet_checkbox(name, event, attend):
         "李國言": "15",
         "李宜耕": "16",
         "蔡政達": "17",
-        "陳李宜家": "26",
-        "柯張筱翊": "27",
+        "Grace Lee": "26",
+        "張筱翊": "27",
         "柯星臨": "28",
-        "李吳修芬": "29",
-        "李周佳韻": "30",
-        "曾余其樺": "31",
-        "楊蔡紋綺": "32",
+        "Zera 😊": "29",
+        "周佳韻": "30",
+        "余其樺": "31",
+        "蔡紋綺": "32",
         "楊歆悅": "33",
         "林佳瑩": "34",
-        "何賴繡富": "35",
+        "何繡富": "35",
         "朱珮瑜": "36",
-        "李林麗仙": "37",
-        "王謝麗美": "38",
+        "李麗仙": "37",
+        "王麗美": "38",
         "秦孝芬": "39",
         "魏廷妤": "40",
-        "張尚恩榮": "41",
+        "恩榮": "41",
         "曾慕華": "42"
     }
     name_id = name_map.get(name)
@@ -195,7 +195,7 @@ def update_gsheet_checkbox(name, event, attend):
         sheet = spreadsheet.worksheet(sheet_name)
         sheet.update_acell(f"{event}{name_id}", attend)
     else:
-        app.logging.error(f'{name} doesnt have name_id, please add to mapping')
+        app.logger.error(f'{name} doesnt have name_id, please add to mapping')
 
 if __name__ == "__main__":
     app.run()
