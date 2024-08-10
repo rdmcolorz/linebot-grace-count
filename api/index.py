@@ -11,7 +11,7 @@ from linebot.models import MessageEvent, TextMessage, \
     TextSendMessage, FlexSendMessage, BubbleContainer, \
     BoxComponent, TextComponent, ButtonComponent, \
     PostbackAction, PostbackEvent
-from flex import create_all_counter_message 
+from api.flex_messages import create_all_counter_message
 
 # from dotenv import load_dotenv
 # load_dotenv()

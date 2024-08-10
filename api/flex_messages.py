@@ -1,7 +1,5 @@
 from linebot.models import FlexSendMessage, BubbleContainer, \
-    BoxComponent, TextComponent, ButtonComponent
-
-
+    BoxComponent, TextComponent, ButtonComponent, PostbackAction
 
 def create_all_counter_message():
     events = {
