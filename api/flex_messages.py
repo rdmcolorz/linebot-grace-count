@@ -3,10 +3,10 @@ from linebot.models import FlexSendMessage, BubbleContainer, \
 
 def create_all_counter_message():
     events = [
-        {'C': '主日', 'D': '禱告聚會', 'E': '家聚會'},
-        {'F': '家聚會受訪', 'G': '小排', 'H': '晨興'},
-        {'I': '傳福音', 'J': '生命讀經', 'K': '天天生命讀經'},
-        {'L': '個人禱告'}
+        {'C': '主日', 'D': '禱告\n聚會', 'E': '家聚會'},
+        {'F': '家受訪', 'G': '小排', 'H': '晨興'},
+        {'I': '傳福音', 'J': '生命\n讀經'},
+        {'K': '天天生\n命讀經', 'L': '個人\n禱告'}
     ]
     all_contents = []
     for box in events:
@@ -17,7 +17,8 @@ def create_all_counter_message():
                     action=PostbackAction(
                         label=f'{event}',
                         data=f'event:{event_id}&attend:TRUE',
-                        size='lg'
+                        size='lg',
+                        margin='xs'
                     ),
                     style='primary',
                     color='#FFA500'
@@ -26,7 +27,8 @@ def create_all_counter_message():
         all_contents.append(
             BoxComponent(
                 layout='horizontal',
-                contents=contents
+                contents=contents,
+                spacing='md',
             )
         )
     all_contents.insert(0, TextComponent(text='週點名', weight='bold', size='xl'))
