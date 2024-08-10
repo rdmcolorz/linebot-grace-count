@@ -9,9 +9,20 @@ def create_all_counter_message():
         {'K': '天天生命讀經', 'L': '個人禱告'}
     ]
     all_contents = []
+    flip_color = '#0f53bf'
+    other_color = '#6200ad'
+    color = ''
     for box in events:
         contents = []
+        if color == flip_color:
+                color = other_color
+        else:
+            color = flip_color
         for event_id, event in box.items():
+            if color == flip_color:
+                color = other_color
+            else:
+                color = flip_color
             contents.append(
                 ButtonComponent(
                     action=PostbackAction(
@@ -21,7 +32,7 @@ def create_all_counter_message():
                         margin='xs'
                     ),
                     style='primary',
-                    color='#FFA500'
+                    color=color
                 )
             )
         all_contents.append(

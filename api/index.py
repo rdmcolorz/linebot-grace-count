@@ -72,7 +72,7 @@ def handle_message(event):
             create_event_flex_message("週二 禱告聚會", 'G')
         )
         return
-    if event.message.text == "全點名":
+    if event.message.text == "點名":
         line_bot_api.reply_message(
             event.reply_token,
             create_all_counter_message()
