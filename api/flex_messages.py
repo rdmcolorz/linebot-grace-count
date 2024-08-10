@@ -15,7 +15,7 @@ def create_all_counter_message():
     for box in events:
         contents = []
         if color == flip_color:
-                color = other_color
+            color = other_color
         else:
             color = flip_color
         for event_id, event in box.items():
@@ -31,6 +31,7 @@ def create_all_counter_message():
                         size='lg',
                         margin='xs'
                     ),
+                    display_text=f'{box[event_id]} 簽到',
                     style='primary',
                     color=color
                 )
