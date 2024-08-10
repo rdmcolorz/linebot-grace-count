@@ -94,7 +94,14 @@ def handle_postback(event):
     event_map = {
         "C": "主日聚會",
         "D": "禱告聚會",
-        "G": "小排聚會"
+        'E': '家聚會',
+        'F': '家受訪',
+        "G": "小排聚會",
+        'H': '晨興',
+        'I': '傳福音',
+        'J': '生命讀經',
+        'K': '天天生命讀經',
+        'L': '個人禱告'
     }
 
     if group_id:
@@ -107,7 +114,7 @@ def handle_postback(event):
     if attend == 'TRUE':
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text=f"{user_name}來到{event_map[event_id]}了～")
+            TextSendMessage(text=f"{user_name}：{event_map[event_id]} 簽到了～")
         )
 
 if __name__ == "__main__":
