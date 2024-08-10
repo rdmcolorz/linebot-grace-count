@@ -84,7 +84,7 @@ def handle_message(event):
 def handle_postback(event):
     # Get data sent with postback
     data = event.postback.data
-    group_id = event.source.get('group_id')
+    group_id = event.source.get.group_id
     user_id = event.source.user_id
 
     parsed_data = parse_data(data)
