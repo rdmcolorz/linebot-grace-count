@@ -3,8 +3,6 @@ import json
 import gspread
 from google.oauth2.service_account import Credentials
 
-from api.index import app
-
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 cred_json = json.loads(os.getenv("SERVICE_ACC_SECRET"))
 creds = Credentials.from_service_account_info(cred_json, scopes=scope)
