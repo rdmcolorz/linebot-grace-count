@@ -11,6 +11,7 @@ from linebot.models import MessageEvent, TextMessage, \
     TextSendMessage, FlexSendMessage, BubbleContainer, \
     BoxComponent, TextComponent, ButtonComponent, \
     PostbackAction, PostbackEvent
+from flex import create_all_counter_message 
 
 # from dotenv import load_dotenv
 # load_dotenv()
@@ -101,7 +102,6 @@ def handle_message(event):
     if event.message.type != "text":
         return
 
-
     if event.message.text == "點名 主日":
         working_status = True
         line_bot_api.reply_message(
@@ -121,6 +121,13 @@ def handle_message(event):
         line_bot_api.reply_message(
             event.reply_token,
             create_flex_message("週二 禱告聚會", 'G')
+        )
+        return
+    if event.message.text == "全點名":
+        working_status = True
+        line_bot_api.reply_message(
+            event.reply_token,
+            create_all_counter_message()
         )
         return
 
@@ -194,8 +201,9 @@ def update_gsheet_checkbox(name, event, attend):
         spreadsheet = client.open_by_key(sheet_key)
         sheet = spreadsheet.worksheet(sheet_name)
         sheet.update_acell(f"{event}{name_id}", attend)
+        app.logger.info(f"gsheet updated at {event}{name_id}, value: {attend}")
     else:
-        app.logger.error(f'{name} doesnt have name_id, please add to mapping')
+        app.logger.info(f'{name} doesnt have name_id, please add to mapping')
 
 if __name__ == "__main__":
     app.run()
