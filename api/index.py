@@ -84,7 +84,7 @@ def handle_message(event):
 def handle_postback(event):
     # Get data sent with postback
     data = event.postback.data
-    group_id = event.source.group_id
+    group_id = getattr(event.source, 'group_id', None)
     user_id = event.source.user_id
 
     parsed_data = parse_data(data)
@@ -98,6 +98,7 @@ def handle_postback(event):
     }
 
     if group_id:
+        group_id = event.source.group_id
         profile = line_bot_api.get_group_member_profile(group_id, user_id)
     else:
         profile = line_bot_api.get_profile(user_id)
