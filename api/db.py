@@ -32,7 +32,7 @@ class User:
         return user_id_list
     
     def fetch_user(self):
-        self.cursor.execute("SELECT * FROM users WHERE user_id = %s", (self.user_id))
+        self.cursor.execute("SELECT * FROM users WHERE user_id = %s" % tuple(self.user_id))
         user_data = self.cursor.fetchall()
         return user_data
     
@@ -40,8 +40,7 @@ class User:
         user_data = self.fetch_user()
         if len(user_data) == 0:
             self.cursor.execute(
-                "INSERT INTO users (user_id, group_id, name) VALUES (%s, %s, %s)",
-                (self.user_id, self.group_id, self.name)
+                "INSERT INTO users (user_id, group_id, name) VALUES (%s, %s, %s)" % (self.user_id, self.group_id, self.name)
             )
             print(f"Added user_id: {self.user_id}, name: {self.name}")
         else:
