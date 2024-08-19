@@ -40,7 +40,7 @@ class User:
         user_data = self.fetch_user()
         if len(user_data) == 0:
             self.cursor.execute(
-                "INSERT INTO users VALUES (%s, %s, %s)",
+                "INSERT INTO users (user_id, group_id, name) VALUES (%s, %s, %s)",
                 (self.user_id, self.group_id, self.name)
             )
             print(f"Added user_id: {self.user_id}, name: {self.name}")
