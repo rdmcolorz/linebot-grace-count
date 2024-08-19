@@ -1,9 +1,9 @@
 import pg8000
 
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import os
 
-load_dotenv()
+# load_dotenv()
 
 
 class User:
