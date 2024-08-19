@@ -27,13 +27,13 @@ class User:
 
     def fetch_all_user_ids(self):
         self.cursor.execute(
-            "SELECT user_id FROM user"
+            "SELECT user_id FROM users"
         )
         user_id_list = self.cursor.fetchall()
         return user_id_list
     
     def fetch_user(self):
-        self.cursor.execute("SELECT * from user WHERE user_id = {user_id}".format(user_id=self.user_id))
+        self.cursor.execute("SELECT * FROM users WHERE user_id = {user_id}".format(user_id=self.user_id))
         user_data = self.cursor.fetchall()
         return user_data
     
@@ -41,7 +41,7 @@ class User:
         user_data = self.fetch_user()
         if len(user_data) == 0:
             self.cursor.execute(
-                "INSERT INTO user VALUES ({user_id}, {group_id}, {name})".format(
+                "INSERT INTO users VALUES ({user_id}, {group_id}, {name})".format(
                     user_id=self.user_id, group_id=self.group_id, name=self.name)
             )
             print(f"Added user_id: {self.user_id}, name: {self.name}")
