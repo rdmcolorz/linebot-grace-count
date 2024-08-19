@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS users (
+    user_id INTEGER NOT NULL,
+    group_id INTEGER,
+    name TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

@@ -54,7 +54,7 @@ def update_gsheet_checkbox(name, event, attend):
             spreadsheet = client.open_by_key(sheet_key)
             sheet = spreadsheet.worksheet(sheet_name)
             sheet.update_acell(f"{event}{name_id}", attend)
-            current_app.logger.error(f"gsheet updated at {event}{name_id}, value: {attend}")
+            current_app.logger.info(f"gsheet updated at {event}{name_id}, value: {attend}")
         except Exception as e:
             current_app.logger.error(e)
     else:

@@ -5,9 +5,10 @@ from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, \
-    TextSendMessage, PostbackEvent
+    TextSendMessage, PostbackEvent, FollowEvent
 from api.flex_messages import create_all_counter_message, create_event_flex_message
 from api.gsheet import update_gsheet_checkbox
+from api.db import User
 
 # from dotenv import load_dotenv
 # load_dotenv()
@@ -15,7 +16,6 @@ from api.gsheet import update_gsheet_checkbox
 
 line_bot_api = LineBotApi(os.getenv("LINE_CHANNEL_ACCESS_TOKEN"))
 line_handler = WebhookHandler(os.getenv("LINE_CHANNEL_SECRET"))
-working_status = os.getenv("DEFALUT_TALKING", default = "true").lower() == "true"
 
 app = Flask(__name__)
 
@@ -48,6 +48,18 @@ def callback():
         abort(400)
     return 'OK'
 
+@line_handler.add(FollowEvent)
+def handle_follow(event):
+    user_id = event.source.user_id
+    profile = line_bot_api.get_profile(user_id)
+    name = profile.display_name
+    user = User(user_id, None, name)
+    user.add_user()
+    welcome_message = TextSendMessage(
+        text='歡迎加入博愛區的點名！\n輸入 點名 就可以開始這週的點名囉！'
+    )
+    line_bot_api.reply_message(event.reply_token, welcome_message)
+
 
 @line_handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
@@ -73,11 +85,46 @@ def handle_message(event):
         )
         return
     if event.message.text == "點名":
+        user_id = event.source.user_id
+        profile = line_bot_api.get_profile(user_id)
+        name = profile.display_name
+        user = User(user_id, None, name)
+        user.add_user()
+        events = [
+            {'C': '主日', 'D': '禱告聚會', 'E': '家聚會'},
+            {'F': '家受訪', 'G': '小排', 'H': '晨興'},
+            {'I': '傳福音', 'J': '生命讀經'},
+            {'K': '天天生命讀經', 'L': '個人禱告'}
+        ]
         line_bot_api.reply_message(
             event.reply_token,
-            create_all_counter_message()
+            create_all_counter_message('週點名', events)
         )
         return
+    if event.message.text == "check in":
+        events = [
+            {'C': 'Lords Day', 'D': 'Prayer Meeting', 'E': '家聚會'},
+            {'F': '家受訪', 'G': 'Home meeting', 'H': 'Morning revival'},
+            {'I': '', 'J': '生命讀經'},
+            {'K': '天天生命讀經', 'L': 'Personal Prayers'}
+        ]
+        line_bot_api.reply_message(
+            event.reply_token,
+            create_all_counter_message('Weekly Check-in', events)
+        )
+        return
+    # if event.message.text == '通知':
+    #     user_id = event.source.user_id
+    #     profile = line_bot_api.get_profile(user_id)
+    #     name = profile.display_name
+    #     user = User(user_id, None, name)
+
+    #     if name == '楊光宇':
+    #         user_id_list = user.fetch_all_user_ids()
+    #         line_bot_api.multicast(
+    #             user_id_list,
+    #             create_all_counter_message()
+    #         )
 
 
 @line_handler.add(PostbackEvent)

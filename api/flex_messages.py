@@ -1,13 +1,8 @@
 from linebot.models import FlexSendMessage, BubbleContainer, \
     BoxComponent, TextComponent, ButtonComponent, PostbackAction
 
-def create_all_counter_message():
-    events = [
-        {'C': '主日', 'D': '禱告聚會', 'E': '家聚會'},
-        {'F': '家受訪', 'G': '小排', 'H': '晨興'},
-        {'I': '傳福音', 'J': '生命讀經'},
-        {'K': '天天生命讀經', 'L': '個人禱告'}
-    ]
+def create_all_counter_message(event_name, events):
+    
     all_contents = []
     flip_color = '#0f53bf'
     other_color = '#6200ad'
@@ -28,10 +23,10 @@ def create_all_counter_message():
                     action=PostbackAction(
                         label=f'{event}',
                         data=f'event:{event_id}&attend:TRUE',
+                        display_text=f'{box[event_id]} 簽到',
                         size='lg',
                         margin='xs'
                     ),
-                    display_text=f'{box[event_id]} 簽到',
                     style='primary',
                     color=color
                 )
@@ -43,7 +38,7 @@ def create_all_counter_message():
                 spacing='md',
             )
         )
-    all_contents.insert(0, TextComponent(text='週點名', weight='bold', size='xl'))
+    all_contents.insert(0, TextComponent(text=event_name, weight='bold', size='xl'))
 
     bubble = BubbleContainer(
         direction='ltr',
