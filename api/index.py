@@ -65,30 +65,18 @@ def handle_follow(event):
 def handle_message(event):
     if event.message.type != "text":
         return
+    
+    # TODO: reply with instructions if message can't be parsed.
+    if event.message.type == "text":
+        pass
 
-    if event.message.text == "點名 主日":
-        line_bot_api.reply_message(
-            event.reply_token,
-            create_event_flex_message("主日聚會", 'C')
-        )
-        return
-    if event.message.text == "點名 小排":
-        line_bot_api.reply_message(
-            event.reply_token,
-            create_event_flex_message("週三/四 小排聚會", 'D')
-        )
-        return
-    if event.message.text == "點名 禱告聚會":
-        line_bot_api.reply_message(
-            event.reply_token,
-            create_event_flex_message("週二 禱告聚會", 'G')
-        )
-        return
     if event.message.text == "點名":
         user_id = event.source.user_id
         profile = line_bot_api.get_profile(user_id)
         name = profile.display_name
         user = User(user_id, None, name)
+
+        # bot will try to add the user to db if it hasn't already.
         user.add_user()
         events = [
             {'C': '主日', 'D': '禱告聚會', 'E': '家聚會'},
@@ -101,18 +89,22 @@ def handle_message(event):
             create_all_counter_message('週點名', events)
         )
         return
-    if event.message.text == "check in":
-        events = [
-            {'C': 'Lords Day', 'D': 'Prayer Meeting', 'E': '家聚會'},
-            {'F': '家受訪', 'G': 'Home meeting', 'H': 'Morning revival'},
-            {'I': '', 'J': '生命讀經'},
-            {'K': '天天生命讀經', 'L': 'Personal Prayers'}
-        ]
-        line_bot_api.reply_message(
-            event.reply_token,
-            create_all_counter_message('Weekly Check-in', events)
-        )
-        return
+
+    # TODO: Add english verison
+    # if event.message.text == "check in":
+    #     events = [
+    #         {'C': 'Lords Day', 'D': 'Prayer Meeting', 'E': '家聚會'},
+    #         {'F': '家受訪', 'G': 'Home meeting', 'H': 'Morning revival'},
+    #         {'I': '', 'J': '生命讀經'},
+    #         {'K': '天天生命讀經', 'L': 'Personal Prayers'}
+    #     ]
+    #     line_bot_api.reply_message(
+    #         event.reply_token,
+    #         create_all_counter_message('Weekly Check-in', events)
+    #     )
+    #     return
+
+    # TODO: Add ability to trigger push notifications to all friends.
     # if event.message.text == '通知':
     #     user_id = event.source.user_id
     #     profile = line_bot_api.get_profile(user_id)
