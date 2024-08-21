@@ -44,6 +44,7 @@ class User:
                 "INSERT INTO users (user_id, group_id, name) VALUES (%s, %s, %s)",
                 [self.user_id, self.group_id, self.name]
             )
+            self.conn.commit()
             print(f"Added user_id: {self.user_id}, name: {self.name}")
         else:
             print("User exists, skipping execution.")

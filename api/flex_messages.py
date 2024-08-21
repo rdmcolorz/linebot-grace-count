@@ -16,10 +16,10 @@ def create_all_counter_message(event_name, events):
                         size='lg',
                         margin='xs',
                         padding='xs',
-                        color='#000000'
                     ),
-                    color='#FFFFFF',
-                    border_color='#000000'
+                    style='secondary'
+                    # color='#FFFFFF',
+                    # border_color='#000000'
                 )
             )
         all_contents.append(
