@@ -1,12 +1,11 @@
 import os
-
 from flask import Flask, request, abort
 
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, \
     TextSendMessage, PostbackEvent, FollowEvent
-from api.flex_messages import create_all_counter_message, create_event_flex_message
+from api.flex_messages import create_all_counter_message
 from api.gsheet import update_gsheet_checkbox
 from api.db import User
 
@@ -79,8 +78,8 @@ def handle_message(event):
         # bot will try to add the user to db if it hasn't already.
         user.add_user()
         events = [
-            {'C': '主日', 'D': '禱告聚會', 'E': '家聚會'},
-            {'F': '家受訪', 'G': '小排', 'H': '晨興'},
+            {'C': '主日', 'D': '禱告聚會', 'G': '小排'},
+            {'F': '家受訪', 'E': '家聚會', 'H': '晨興'},
             {'I': '傳福音', 'J': '生命讀經'},
             {'K': '天天生命讀經', 'L': '個人禱告'}
         ]
@@ -105,18 +104,24 @@ def handle_message(event):
     #     return
 
     # TODO: Add ability to trigger push notifications to all friends.
-    # if event.message.text == '通知':
-    #     user_id = event.source.user_id
-    #     profile = line_bot_api.get_profile(user_id)
-    #     name = profile.display_name
-    #     user = User(user_id, None, name)
+    if event.message.text == '通知':
+        user_id = event.source.user_id
+        profile = line_bot_api.get_profile(user_id)
+        name = profile.display_name
+        user = User(user_id, None, name)
 
-    #     if name == '楊光宇':
-    #         user_id_list = user.fetch_all_user_ids()
-    #         line_bot_api.multicast(
-    #             user_id_list,
-    #             create_all_counter_message()
-    #         )
+        if name == '楊光宇':
+            events = [
+                {'C': '主日', 'D': '禱告聚會', 'E': '家聚會'},
+                {'F': '家受訪', 'G': '小排', 'H': '晨興'},
+                {'I': '傳福音', 'J': '生命讀經'},
+                {'K': '天天生命讀經', 'L': '個人禱告'}
+            ]
+            user_id_list = user.fetch_all_user_ids()
+            line_bot_api.multicast(
+                user_id_list,
+                create_all_counter_message(f'嗨～{name}！來週點名囉～', events)
+            )
 
 
 @line_handler.add(PostbackEvent)

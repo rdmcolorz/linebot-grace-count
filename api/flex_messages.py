@@ -4,20 +4,9 @@ from linebot.models import FlexSendMessage, BubbleContainer, \
 def create_all_counter_message(event_name, events):
     
     all_contents = []
-    flip_color = '#0f53bf'
-    other_color = '#6200ad'
-    color = ''
     for box in events:
         contents = []
-        if color == flip_color:
-            color = other_color
-        else:
-            color = flip_color
         for event_id, event in box.items():
-            if color == flip_color:
-                color = other_color
-            else:
-                color = flip_color
             contents.append(
                 ButtonComponent(
                     action=PostbackAction(
@@ -25,10 +14,11 @@ def create_all_counter_message(event_name, events):
                         data=f'event:{event_id}&attend:TRUE',
                         display_text=f'{box[event_id]} 簽到',
                         size='lg',
-                        margin='xs'
+                        margin='xs',
+                        padding='xs'
                     ),
                     style='primary',
-                    color=color
+                    color='#FFFFFF'
                 )
             )
         all_contents.append(
@@ -38,7 +28,7 @@ def create_all_counter_message(event_name, events):
                 spacing='md',
             )
         )
-    all_contents.insert(0, TextComponent(text=event_name, weight='bold', size='xl'))
+    all_contents.insert(0, TextComponent(text=event_name, weight='bold', size='lg'))
 
     bubble = BubbleContainer(
         direction='ltr',
@@ -49,7 +39,7 @@ def create_all_counter_message(event_name, events):
         )
     )
     flex_message = FlexSendMessage(
-        alt_text='恩典點名', contents=bubble
+        alt_text=event_name, contents=bubble
     )
     return flex_message
 

@@ -28,7 +28,8 @@ class User:
         self.cursor.execute(
             "SELECT user_id FROM users"
         )
-        user_id_list = self.cursor.fetchall()
+        result = self.cursor.fetchall()
+        user_id_list = [row[0] for row in result]
         return user_id_list
     
     def fetch_user(self):
