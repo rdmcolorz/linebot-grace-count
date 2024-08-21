@@ -74,6 +74,13 @@ def handle_message(event):
         profile = line_bot_api.get_profile(user_id)
         name = profile.display_name
         user = User(user_id, None, name)
+        pending_message = TextSendMessage(
+            text='正在抓取這週的點名項目...'
+        )
+        line_bot_api.reply_message(
+            event.reply_token,
+            pending_message
+        )
 
         # bot will try to add the user to db if it hasn't already.
         user.add_user()
