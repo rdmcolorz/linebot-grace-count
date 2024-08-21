@@ -17,7 +17,8 @@ def create_all_counter_message(event_name, events):
                         margin='xs',
                         padding='xs',
                     ),
-                    style='secondary'
+                    style='secondary',
+                    adjust_mode='contain'
                     # color='#FFFFFF',
                     # border_color='#000000'
                 )
