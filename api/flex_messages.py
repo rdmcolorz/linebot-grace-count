@@ -15,10 +15,11 @@ def create_all_counter_message(event_name, events):
                         display_text=f'{box[event_id]} 簽到',
                         size='lg',
                         margin='xs',
-                        padding='xs'
+                        padding='xs',
+                        color='#000000'
                     ),
-                    style='primary',
-                    color='#FFFFFF'
+                    color='#FFFFFF',
+                    border_color='#000000'
                 )
             )
         all_contents.append(
