@@ -18,7 +18,8 @@ def create_all_counter_message(event_name, events):
                         padding='xs',
                     ),
                     style='secondary',
-                    adjust_mode='contain'
+                    adjust_mode='shrink-to-fit',
+                    scaling=True
                     # color='#FFFFFF',
                     # border_color='#000000'
                 )

@@ -47,7 +47,7 @@ class User:
             self.conn.commit()
             print(f"Added user_id: {self.user_id}, name: {self.name}")
         else:
-            print("User exists, skipping execution.")
+            print("User exists, skipping adding user.")
             
 
 if __name__ == "__main__":
