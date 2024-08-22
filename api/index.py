@@ -17,6 +17,13 @@ from api.db import User
 line_bot_api = LineBotApi(os.getenv("LINE_CHANNEL_ACCESS_TOKEN"))
 line_handler = WebhookHandler(os.getenv("LINE_CHANNEL_SECRET"))
 
+EVENT_DATA = [
+        {'C': '主日', 'D': '禱告聚會', 'G': '小排'},
+        {'H': '晨興', 'E': '家聚會', 'F': '家受訪'},
+        {'J': '生命讀經', 'K': '天天生命讀經'},
+        {'I': '傳福音', 'L': '個人禱告'}
+    ]
+
 app = Flask(__name__)
 
 def parse_data(input_string):
@@ -75,15 +82,9 @@ def handle_message(event):
         return
 
     if event.message.text == "點名":
-        event_data = [
-            {'C': '主日', 'D': '禱告聚會', 'G': '小排'},
-            {'H': '晨興', 'E': '家聚會', 'F': '家受訪'},
-            {'J': '生命讀經', 'K': '天天生命讀經'},
-            {'I': '傳福音', 'L': '個人禱告'}
-        ]
         line_bot_api.reply_message(
             event.reply_token,
-            create_all_counter_message('週點名', event_data, state="")
+            create_all_counter_message('週點名', EVENT_DATA, state="")
         )
         print(datetime.datetime.now(), "replied message")
         return
@@ -122,16 +123,10 @@ def handle_message(event):
         user = User(user_id, None, name)
 
         if name == '楊光宇':
-            events = [
-                {'C': '主日', 'D': '禱告聚會', 'G': '小排'},
-                {'H': '晨興', 'E': '家聚會', 'F': '家受訪'},
-                {'J': '生命讀經', 'K': '天天生命讀經'},
-                {'I': '傳福音', 'L': '個人禱告'}
-            ]
             user_id_list = user.fetch_all_user_ids()
             line_bot_api.multicast(
                 user_id_list,
-                create_all_counter_message(f'嗨～{name}！來週點名囉～', events, state="")
+                create_all_counter_message(f'嗨～{name}！來週點名囉～', EVENT_DATA, state="")
             )
 
 
@@ -151,16 +146,10 @@ def handle_postback(event):
 
 
 def next_question(event, parsed_data):
-    event_data = [
-        {'C': '主日', 'D': '禱告聚會', 'G': '小排'},
-        {'H': '晨興', 'E': '家聚會', 'F': '家受訪'},
-        {'J': '生命讀經', 'K': '天天生命讀經'},
-        {'I': '傳福音', 'L': '個人禱告'}
-    ]
     state = parsed_data.get('state')
     line_bot_api.reply_message(
         event.reply_token,
-        create_all_counter_message('週點名', event_data, state)
+        create_all_counter_message('週點名', EVENT_DATA, state)
     )
     return
 
