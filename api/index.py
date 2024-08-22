@@ -126,7 +126,7 @@ def handle_message(event):
             user_id_list = user.fetch_all_user_ids()
             line_bot_api.multicast(
                 user_id_list,
-                create_all_counter_message(f'嗨～{name}！來週點名囉～', EVENT_DATA, state="")
+                create_all_counter_message(f'嗨～來週點名囉～', EVENT_DATA, state="")
             )
 
 
