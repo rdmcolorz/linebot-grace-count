@@ -1,4 +1,5 @@
 import os
+import datetime
 from flask import Flask, request, abort
 
 from linebot import LineBotApi, WebhookHandler
@@ -74,16 +75,16 @@ def handle_message(event):
         return
 
     if event.message.text == "點名":
-        print("received message 點名")
+        print(datetime.datetime.now(), "received message 點名")
         user_id = event.source.user_id
         profile = line_bot_api.get_profile(user_id)
         name = profile.display_name
         user = User(user_id, None, name)
 
-        print("Adding user data...")
+        print(datetime.datetime.now(), "Adding user data...")
         # bot will try to add the user to db if it hasn't already.
         user.add_user()
-        print("Done adding user to db")
+        print(datetime.datetime.now(), "Done adding user to db")
         event_data = [
             {'C': '主日', 'D': '禱告聚會', 'G': '小排'},
             {'H': '晨興', 'E': '家聚會', 'F': '家受訪'},
@@ -94,7 +95,7 @@ def handle_message(event):
             event.reply_token,
             create_all_counter_message('週點名', event_data, state="")
         )
-        print("replied message")
+        print(datetime.datetime.now(), "replied message")
         return
 
     # TODO: Add english verison
