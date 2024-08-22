@@ -39,7 +39,7 @@ def create_all_counter_message(event_name, event_data, state):
         ButtonComponent(
             action=PostbackAction(
                 label='確認送出',
-                data='action:r',
+                data=f'action:r&state:{state}',
                 display_text='送出紀錄',
                 size='lg',
                 margin='xs',
