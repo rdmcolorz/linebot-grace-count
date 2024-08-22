@@ -50,6 +50,21 @@ def create_all_counter_message(event_name, event_data, state):
             scaling=True
         )
     )
+    all_contents.append(
+        ButtonComponent(
+            action=PostbackAction(
+                label='重新開始',
+                data='action:n&state:',
+                display_text='重新開始',
+                size='lg',
+                margin='xs',
+                padding='xs',
+            ),
+            style='secondary',
+            adjust_mode='shrink-to-fit',
+            scaling=True
+        )
+    )
 
     bubble = BubbleContainer(
         direction='ltr',
