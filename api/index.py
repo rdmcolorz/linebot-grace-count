@@ -182,7 +182,7 @@ def handle_gsheet_record(event, parsed_data, user_id, group_id):
 
     user_name = profile.display_name
     update_gsheet_checkbox_batch(user_name, state)
-    checked_events = [event_map[id] for id in state].join(', ')
+    checked_events = ', '.join([event_map[id] for id in state])
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=f"{user_name} 於 {checked_events} 簽到了～")
