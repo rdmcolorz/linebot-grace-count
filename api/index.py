@@ -75,16 +75,6 @@ def handle_message(event):
         return
 
     if event.message.text == "點名":
-        print(datetime.datetime.now(), "received message 點名")
-        user_id = event.source.user_id
-        profile = line_bot_api.get_profile(user_id)
-        name = profile.display_name
-        user = User(user_id, None, name)
-
-        print(datetime.datetime.now(), "Adding user data...")
-        # bot will try to add the user to db if it hasn't already.
-        user.add_user()
-        print(datetime.datetime.now(), "Done adding user to db")
         event_data = [
             {'C': '主日', 'D': '禱告聚會', 'G': '小排'},
             {'H': '晨興', 'E': '家聚會', 'F': '家受訪'},
@@ -97,6 +87,18 @@ def handle_message(event):
         )
         print(datetime.datetime.now(), "replied message")
         return
+
+    if event.message.text == "通知我":
+        user_id = event.source.user_id
+        profile = line_bot_api.get_profile(user_id)
+        name = profile.display_name
+        user = User(user_id, None, name)
+        user.add_user()
+        message = TextSendMessage(
+            text=f'{name} 已加入通知清單！'
+        )
+        line_bot_api.reply_message(event.reply_token, message)
+
 
     # TODO: Add english verison
     # if event.message.text == "check in":
