@@ -74,13 +74,16 @@ def handle_message(event):
         return
 
     if event.message.text == "點名":
+        print("received message 點名")
         user_id = event.source.user_id
         profile = line_bot_api.get_profile(user_id)
         name = profile.display_name
         user = User(user_id, None, name)
 
+        print("Adding user data...")
         # bot will try to add the user to db if it hasn't already.
         user.add_user()
+        print("Done adding user to db")
         event_data = [
             {'C': '主日', 'D': '禱告聚會', 'G': '小排'},
             {'H': '晨興', 'E': '家聚會', 'F': '家受訪'},
@@ -91,6 +94,7 @@ def handle_message(event):
             event.reply_token,
             create_all_counter_message('週點名', event_data, state="")
         )
+        print("replied message")
         return
 
     # TODO: Add english verison
@@ -116,10 +120,10 @@ def handle_message(event):
 
         if name == '楊光宇':
             events = [
-                {'C': '主日', 'D': '禱告聚會', 'E': '家聚會'},
-                {'F': '家受訪', 'G': '小排', 'H': '晨興'},
-                {'I': '傳福音', 'J': '生命讀經'},
-                {'K': '天天生命讀經', 'L': '個人禱告'}
+                {'C': '主日', 'D': '禱告聚會', 'G': '小排'},
+                {'H': '晨興', 'E': '家聚會', 'F': '家受訪'},
+                {'J': '生命讀經', 'K': '天天生命讀經'},
+                {'I': '傳福音', 'L': '個人禱告'}
             ]
             user_id_list = user.fetch_all_user_ids()
             line_bot_api.multicast(
