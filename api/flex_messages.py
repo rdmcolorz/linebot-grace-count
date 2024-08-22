@@ -17,7 +17,7 @@ def create_all_counter_message(event_name, event_data, state):
                         label=f'{event}',
                         data=f'action:n&state:{state + event_id}',
                         display_text=f'{box[event_id]} 簽到',
-                        size='lg',
+                        flex=len(event),
                         margin='xs',
                         padding='xs',
                     ),
