@@ -1,23 +1,27 @@
 from linebot.models import FlexSendMessage, BubbleContainer, \
     BoxComponent, TextComponent, ButtonComponent, PostbackAction
 
-def create_all_counter_message(event_name, events):
-    
+def create_all_counter_message(event_name, event_data, state):
     all_contents = []
-    for box in events:
+
+    for box in event_data:
         contents = []
         for event_id, event in box.items():
+            if event_id in state:
+                style='primary'
+            else:
+                style='secondary'
             contents.append(
                 ButtonComponent(
                     action=PostbackAction(
                         label=f'{event}',
-                        data=f'event:{event_id}&attend:TRUE',
+                        data=f'action:n&state:{state + event_id}',
                         display_text=f'{box[event_id]} 簽到',
                         size='lg',
                         margin='xs',
                         padding='xs',
                     ),
-                    style='secondary',
+                    style=style,
                     adjust_mode='shrink-to-fit',
                     scaling=True
                     # color='#FFFFFF',
@@ -32,6 +36,21 @@ def create_all_counter_message(event_name, events):
             )
         )
     all_contents.insert(0, TextComponent(text=event_name, weight='bold', size='lg'))
+    all_contents.insert(-1, 
+        ButtonComponent(
+            action=PostbackAction(
+                label='確認送出',
+                data='action:r',
+                display_text='送出紀錄',
+                size='lg',
+                margin='xs',
+                padding='xs',
+            ),
+            style='primary',
+            adjust_mode='shrink-to-fit',
+            scaling=True
+        )
+    )
 
     bubble = BubbleContainer(
         direction='ltr',
