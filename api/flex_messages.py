@@ -2,7 +2,7 @@ from linebot.models import FlexSendMessage, BubbleContainer, \
     BoxComponent, TextComponent, ButtonComponent, PostbackAction
 
 def create_all_counter_message(event_name, event_data, state):
-    all_contents = []
+    all_contents = [TextComponent(text=event_name, weight='bold', size='lg')]
 
     for box in event_data:
         contents = []
@@ -35,8 +35,7 @@ def create_all_counter_message(event_name, event_data, state):
                 spacing='md',
             )
         )
-    all_contents.insert(0, TextComponent(text=event_name, weight='bold', size='lg'))
-    all_contents.insert(-1, 
+    all_contents.append(
         ButtonComponent(
             action=PostbackAction(
                 label='確認送出',
