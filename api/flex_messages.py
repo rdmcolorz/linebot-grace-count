@@ -16,7 +16,7 @@ def create_all_counter_message(event_name, event_data, state):
                     action=PostbackAction(
                         label=f'{event}',
                         data=f'action:n&state:{state + event_id}',
-                        display_text=f'{box[event_id]} 簽到',
+                        display_text=f'{event} 簽到',
                         flex=len(event),
                         margin='xs',
                         padding='xs',
