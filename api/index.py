@@ -67,7 +67,7 @@ def handle_message(event):
         return
     
     # TODO: reply with instructions if message can't be parsed.
-    if event.message.type == "text" and event.message.text != "點名":
+    if event.message.type == "text" and event.message.text not in ["點名", "通知我", "通知"]:
         welcome_message = TextSendMessage(
             text='歡迎加入博愛區的點名！\n輸入 點名 就可以開始這週的點名囉！'
         )
