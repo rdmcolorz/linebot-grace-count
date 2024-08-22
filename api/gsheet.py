@@ -70,18 +70,19 @@ def update_gsheet_checkbox_batch(name, state):
     name_id = NAME_MAP.get(name)
     if name_id:
         try:
-            parsed_state = state.split('')
             update_values = []
             for e in 'CDEFGHIJKL':
-                if e in parsed_state:
+                if e in state:
                     update_values.append(True)
                 else:
                     update_values.append(False)
+            print(update_values)
             spreadsheet = client.open_by_key(sheet_key)
             sheet = spreadsheet.worksheet(sheet_name)
             sheet.update(f"C{name_id}:L{name_id}", update_values)
             current_app.logger.info(f"gsheet updated at {name_id}, value: {update_values}")
         except Exception as e:
+            print('error what')
             current_app.logger.error(e)
     else:
         current_app.logger.info(f'{name} doesnt have name_id, please add to mapping')
