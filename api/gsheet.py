@@ -73,9 +73,9 @@ def update_gsheet_checkbox_batch(name, state):
             update_values = []
             for e in 'CDEFGHIJKL':
                 if e in state:
-                    update_values.append('TRUE')
+                    update_values.append(True)
                 else:
-                    update_values.append('FALSE')
+                    update_values.append(False)
             print(update_values)
             spreadsheet = client.open_by_key(sheet_key)
             sheet = spreadsheet.worksheet(sheet_name)
