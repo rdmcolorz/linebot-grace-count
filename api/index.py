@@ -18,8 +18,8 @@ line_bot_api = LineBotApi(os.getenv("LINE_CHANNEL_ACCESS_TOKEN"))
 line_handler = WebhookHandler(os.getenv("LINE_CHANNEL_SECRET"))
 
 EVENT_DATA = [
-        {'C': '主日', 'D': '禱告聚會', 'G': '小排'},
-        {'H': '晨興', 'E': '家聚會', 'F': '家受訪'},
+        {'C': '主日', 'D': '禱告聚會', 'H': '小排'},
+        {'E': '晨興', 'G': '家聚會', 'F': '家受訪'},
         {'J': '生命讀經', 'K': '天天生命讀經'},
         {'I': '傳福音', 'L': '個人禱告'}
     ]
@@ -160,10 +160,10 @@ def handle_gsheet_record(event, parsed_data, user_id, group_id):
     event_map = {
         "C": "主日聚會",
         "D": "禱告聚會",
-        'E': '家聚會',
-        'F': '家受訪',
-        "G": "小排聚會",
-        'H': '晨興',
+        'E': '晨興',
+        'F': '家出訪',
+        "G": "家受訪",
+        'H': '小排',
         'I': '傳福音',
         'J': '生命讀經',
         'K': '天天生命讀經',
