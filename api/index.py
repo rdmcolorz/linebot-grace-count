@@ -19,7 +19,7 @@ line_handler = WebhookHandler(os.getenv("LINE_CHANNEL_SECRET"))
 
 EVENT_DATA = [
         {'C': '主日', 'D': '禱告聚會', 'H': '小排'},
-        {'E': '晨興', 'G': '家聚會', 'F': '家受訪'},
+        {'E': '晨興', 'F': '家聚會', 'G': '家受訪'},
         {'J': '生命讀經', 'K': '天天生命讀經'},
         {'I': '傳福音', 'L': '個人禱告'}
     ]
