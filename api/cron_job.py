@@ -20,4 +20,5 @@ def send_weekly_notification():
     )
 
 if __name__ == "__main__":
+    print("Triggered cron job")
     send_weekly_notification()
