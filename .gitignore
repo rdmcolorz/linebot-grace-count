@@ -4,10 +4,13 @@
 __pycache__
 
 # Environments 
-.env 
+.env.*
+.env
 .venv 
 env/ 
 venv/ 
 ENV/ 
+secrets/
 env.bak/ 
 venv.bak/ 
+.vscode
