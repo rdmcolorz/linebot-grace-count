@@ -63,7 +63,8 @@ def handle_plan_calendar_in_group(event):
             date=parsed["date"],
         )
         html_link = created.get('htmlLink', '')
-        msg = f"已建立活動：{parsed['title']}\n"
+        # msg = f"已建立活動：{parsed['title']}\n"
+        msg = ""
         if parsed["all_day"]:
             msg += f"日期：{parsed['date'].isoformat()}\n"
         else:
@@ -73,8 +74,8 @@ def handle_plan_calendar_in_group(event):
             btn_msg = TemplateSendMessage(
                 alt_text=f"開啟行事曆：{parsed['title']}",
                 template=ButtonsTemplate(
-                    title="行事曆活動",
-                    text=parsed['title'],
+                    title=f"已建立活動：{parsed['title']}",
+                    text=msg,
                     actions=[
                         URIAction(label="查看行事曆", uri=html_link)
                     ]
