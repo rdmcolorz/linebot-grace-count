@@ -14,3 +14,6 @@ secrets/
 env.bak/ 
 venv.bak/ 
 .vscode
+
+bot-venv/
+tests/

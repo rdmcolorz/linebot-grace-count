@@ -9,6 +9,7 @@ from linebot.models import MessageEvent, TextMessage, \
 from api.flex_messages import create_all_counter_message
 from api.gsheet import update_gsheet_checkbox_batch
 from api.db import User
+from api.gcal import parse_event_text, create_calendar_event
 
 # from dotenv import load_dotenv
 # load_dotenv()
@@ -35,6 +36,106 @@ def parse_data(input_string):
         result[key] = value
     return result
 
+
+# --- Message handlers ---
+def handle_plan_calendar_in_group(event):
+    is_group = getattr(event.source, 'type', None) == 'group' or hasattr(event.source, 'group_id')
+    if not is_group:
+        return False
+    text = event.message.text.strip()
+    if not (text.startswith("規劃：") or text.startswith("規劃:")):
+        return False
+    content = text.split("：", 1)[1] if "：" in text else text.split(":", 1)[1]
+    content = content.strip()
+    parsed = parse_event_text(content)
+    if not parsed:
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text="格式錯誤：請在『規劃：』後面加上日期，例：規劃：9/10 晚上查經 19:30")
+        )
+        return True
+    try:
+        created = create_calendar_event(
+            summary=parsed["title"],
+            start_dt=parsed["start_dt"],
+            end_dt=parsed["end_dt"],
+            date=parsed["date"],
+        )
+        html_link = created.get('htmlLink', '')
+        msg = f"已建立行事曆活動：{parsed['title']}\n"
+        if parsed["all_day"]:
+            msg += f"日期：{parsed['date'].isoformat()}\n"
+        else:
+            msg += f"時間：{parsed['start_dt'].strftime('%Y-%m-%d %H:%M')} - {parsed['end_dt'].strftime('%H:%M')}\n"
+        if html_link:
+            msg += f"連結：{html_link}"
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=msg))
+        return True
+    except Exception as e:
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=f"建立行事曆失敗：{e}"))
+        return True
+
+
+def handle_checkin_command(event):
+    if event.message.text != "點名":
+        return False
+    line_bot_api.reply_message(
+        event.reply_token,
+        create_all_counter_message('週點名', EVENT_DATA, state="")
+    )
+    print(datetime.datetime.now(), "replied message")
+    return True
+
+
+def handle_notify_me_command(event):
+    if event.message.text != "通知我":
+        return False
+    user_id = event.source.user_id
+    profile = line_bot_api.get_profile(user_id)
+    name = profile.display_name
+    user = User(user_id, None, name)
+    user.add_user()
+    message = TextSendMessage(
+        text=f'{name} 已加入點名通知清單！'
+    )
+    line_bot_api.reply_message(event.reply_token, message)
+    return True
+
+
+def handle_help_command(event):
+    if event.message.text != "機器人功能":
+        return False
+    help_text = (
+        "機器人功能\n"
+        "1) 點名：輸入『點名』開啟週點名選單，勾選後按『確認送出』一次回報。\n"
+        "2) 行事曆規劃：在群組中以『規劃：』或『規劃:』開頭，接活動名稱與日期（可含時間），自動建立 Google 行事曆活動。\n"
+        "   範例：規劃：9/10 19:30 小排\n"
+        "   提醒：行事曆功能僅在群組訊息生效。\n"
+        "3) 通知我：將你加入每週點名提醒名單。\n"
+    )
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(text=help_text))
+    return True
+
+
+# --- Routers ---
+def handle_group_text_message(event):
+    if handle_plan_calendar_in_group(event):
+        return True
+    if handle_notify_me_command(event):
+        return True
+    if handle_help_command(event):
+        return True
+    return False
+
+
+def handle_user_text_message(event):
+    if handle_checkin_command(event):
+        return True
+    if handle_notify_me_command(event):
+        return True
+    if handle_help_command(event):
+        return True
+    return False
 
 # domain root
 @app.route('/')
@@ -72,36 +173,18 @@ def handle_follow(event):
 def handle_message(event):
     if event.message.type != "text":
         return
-    
-    # TODO: reply with instructions if message can't be parsed.
-    if event.message.type == "text" and event.message.text not in ["點名", "通知我", "通知"]:
-        welcome_message = TextSendMessage(
-            text='歡迎加入博愛區的點名！\n輸入 點名 就可以開始這週的點名囉！'
-        )
-        line_bot_api.reply_message(event.reply_token, welcome_message)
-        return
 
-    if event.message.text == "點名":
-        line_bot_api.reply_message(
-            event.reply_token,
-            create_all_counter_message('週點名', EVENT_DATA, state="")
-        )
-        print(datetime.datetime.now(), "replied message")
-        return
-
-    if event.message.text == "通知我":
-        user_id = event.source.user_id
-        profile = line_bot_api.get_profile(user_id)
-        name = profile.display_name
-        user = User(user_id, None, name)
-        user.add_user()
-        message = TextSendMessage(
-            text=f'{name} 已加入通知清單！'
-        )
-        line_bot_api.reply_message(event.reply_token, message)
+    # Delegate by chat type
+    source_type = getattr(event.source, 'type', None)
+    if source_type == 'group' or hasattr(event.source, 'group_id'):
+        if handle_group_text_message(event):
+            return
+    else:
+        if handle_user_text_message(event):
+            return
 
 
-    # TODO: Add english verison
+    # TODO: Add english version
     # if event.message.text == "check in":
     #     events = [
     #         {'C': 'Lords Day', 'D': 'Prayer Meeting', 'E': '家聚會'},
