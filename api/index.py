@@ -64,11 +64,8 @@ def handle_plan_calendar_in_group(event):
         )
         html_link = created.get('htmlLink', '')
         # msg = f"已建立活動：{parsed['title']}\n"
-        msg = ""
-        if parsed["all_day"]:
-            msg += f"日期：{parsed['date'].isoformat()}\n"
-        else:
-            msg += f"時間：{parsed['start_dt'].strftime('%Y/%m/%d %H:%M')} - {parsed['end_dt'].strftime('%H:%M')}\n"
+        msg = f"日期：{parsed['date'].isoformat()}\n"
+        msg += f"時間：{parsed['start_dt'].strftime('%H:%M')} - {parsed['end_dt'].strftime('%H:%M')}\n"
         if html_link:
             # msg += f"連結：{html_link}"
             btn_msg = TemplateSendMessage(
@@ -81,7 +78,7 @@ def handle_plan_calendar_in_group(event):
                     ]
                 )
             )
-            line_bot_api.reply_message(event.reply_token, [TextSendMessage(text=msg), btn_msg])
+            line_bot_api.reply_message(event.reply_token, btn_msg)
         else:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=msg))
         return True
