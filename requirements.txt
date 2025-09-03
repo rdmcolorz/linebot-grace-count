@@ -3,4 +3,6 @@ Werkzeug==2.3.7
 line-bot-sdk
 gspread
 google-auth
+google-api-python-client
 pg8000
+pytest
