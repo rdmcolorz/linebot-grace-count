@@ -52,7 +52,7 @@ def handle_plan_calendar_in_group(event):
     if not parsed:
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text="格式錯誤：請在『規劃：』後面加上日期，例：規劃：9/10 晚上查經 19:30")
+            TextSendMessage(text="格式錯誤：請在『規劃：』後面加上日期，例：規劃：9/10 19:30 小排")
         )
         return True
     try:
