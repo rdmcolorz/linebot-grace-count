@@ -5,7 +5,8 @@ from flask import Flask, request, abort, jsonify
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, \
-    TextSendMessage, PostbackEvent, FollowEvent
+    TextSendMessage, PostbackEvent, FollowEvent, TemplateSendMessage, \
+    ButtonsTemplate, URIAction
 from api.flex_messages import create_all_counter_message
 from api.gsheet import update_gsheet_checkbox_batch
 from api.db import User
@@ -62,14 +63,26 @@ def handle_plan_calendar_in_group(event):
             date=parsed["date"],
         )
         html_link = created.get('htmlLink', '')
-        msg = f"已建立行事曆活動：{parsed['title']}\n"
+        msg = f"已建立活動：{parsed['title']}\n"
         if parsed["all_day"]:
             msg += f"日期：{parsed['date'].isoformat()}\n"
         else:
-            msg += f"時間：{parsed['start_dt'].strftime('%Y-%m-%d %H:%M')} - {parsed['end_dt'].strftime('%H:%M')}\n"
+            msg += f"時間：{parsed['start_dt'].strftime('%Y/%m/%d %H:%M')} - {parsed['end_dt'].strftime('%H:%M')}\n"
         if html_link:
-            msg += f"連結：{html_link}"
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=msg))
+            # msg += f"連結：{html_link}"
+            btn_msg = TemplateSendMessage(
+                alt_text=f"開啟行事曆：{parsed['title']}",
+                template=ButtonsTemplate(
+                    title="行事曆活動",
+                    text=parsed['title'],
+                    actions=[
+                        URIAction(label="查看行事曆", uri=html_link)
+                    ]
+                )
+            )
+            line_bot_api.reply_message(event.reply_token, [TextSendMessage(text=msg), btn_msg])
+        else:
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=msg))
         return True
     except Exception as e:
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=f"建立行事曆失敗：{e}"))
