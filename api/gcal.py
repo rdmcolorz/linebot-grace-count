@@ -141,7 +141,7 @@ def parse_event_text(text: str, timezone_str: str = "Asia/Taipei", now: Optional
             "all_day": False,
             "start_dt": start_dt,
             "end_dt": end_dt,
-            "date": None,
+            "date": date_obj.isoformat(),
         }
 
     if time_tuple:
@@ -157,7 +157,7 @@ def parse_event_text(text: str, timezone_str: str = "Asia/Taipei", now: Optional
             "all_day": False,
             "start_dt": start_dt,
             "end_dt": end_dt,
-            "date": None,
+            "date": date_obj.isoformat(),
         }
     else:
         return {
