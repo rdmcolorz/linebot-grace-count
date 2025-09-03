@@ -68,7 +68,7 @@ def handle_plan_calendar_in_group(event):
         if parsed["all_day"]:
             msg += f"日期：{parsed['date'].isoformat()}\n"
         else:
-            msg += f"時間：{parsed['start_dt'].strftime('y/%m/%d %H:%M')} - {parsed['end_dt'].strftime('%H:%M')}\n"
+            msg += f"時間：{parsed['start_dt'].strftime('%Y/%m/%d %H:%M')} - {parsed['end_dt'].strftime('%H:%M')}\n"
         if html_link:
             # msg += f"連結：{html_link}"
             btn_msg = TemplateSendMessage(
