@@ -158,8 +158,18 @@ def create_calendar_event(
     description: Optional[str] = None,
     location: Optional[str] = None,
 ) -> Dict[str, Any]:
+    """
+    Create a Google Calendar event. Returns the created event resource dict.
+    If date is provided, creates an all-day event. Otherwise uses start_dt/end_dt.
+
+    calendar_id example: 'example.com_aaaaaaaaaaaaaaaaaaaaaaaaaa@group.calendar.google.com'
+    If not provided, falls back to env GOOGLE_CALENDAR_ID, then an example ID.
+    """
     if calendar_id is None:
-        calendar_id = os.getenv("GOOGLE_CALENDAR_ID", "primary")
+        calendar_id = os.getenv(
+            "GOOGLE_CALENDAR_ID",
+            "example.com_aaaaaaaaaaaaaaaaaaaaaaaaaa@group.calendar.google.com",
+        )
 
     body: Dict[str, Any] = {
         "summary": summary,
