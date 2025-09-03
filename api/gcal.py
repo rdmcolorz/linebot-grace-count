@@ -112,16 +112,37 @@ def parse_event_text(text: str, timezone_str: str = "Asia/Taipei", now: Optional
     if not date_obj:
         return None
 
+    # Extract time range like 900 - 1300 (HHMM-HHMM) if present
+    time_range = _extract_time_range(text)
+
     text_clean = re.sub(r"(\d{4})[\-/](\d{1,2})[\-/](\d{1,2})", " ", text)
     text_clean = re.sub(r"(\d{1,2})[\-/](\d{1,2})(?!\d)", " ", text_clean)
     text_clean = re.sub(r"(\d{1,2})\s*月\s*(\d{1,2})\s*日", " ", text_clean)
     text_clean = re.sub(r"(上午|下午|AM|PM)?\s*(\d{1,2})[:：](\d{2})", " ", text_clean, flags=re.IGNORECASE)
     text_clean = re.sub(r"(上午|下午)?\s*(\d{1,2})\s*(?:點|時)\s*(?:(\d{1,2})\s*分?)?", " ", text_clean)
+    # Remove HHMM - HHMM time range from title text
+    text_clean = re.sub(r"\b(\d{1,2})(\d{2})\s*[-~–—]\s*(\d{1,2})(\d{2})\b", " ", text_clean)
     title = re.sub(r"\s+", " ", text_clean).strip()
     if not title:
         title = "未命名活動"
 
     tzinfo = _get_timezone(timezone_str)
+
+    # Prefer explicit time range if provided
+    if time_range:
+        sh, sm, eh, em = time_range
+        start_dt = dt.datetime(date_obj.year, date_obj.month, date_obj.day, sh, sm)
+        end_dt = dt.datetime(date_obj.year, date_obj.month, date_obj.day, eh, em)
+        if tzinfo is not None:
+            start_dt = start_dt.replace(tzinfo=tzinfo)
+            end_dt = end_dt.replace(tzinfo=tzinfo)
+        return {
+            "title": title,
+            "all_day": False,
+            "start_dt": start_dt,
+            "end_dt": end_dt,
+            "date": None,
+        }
 
     if time_tuple:
         hour, minute, ampm = time_tuple
@@ -147,6 +168,19 @@ def parse_event_text(text: str, timezone_str: str = "Asia/Taipei", now: Optional
             "date": date_obj,
         }
 
+
+def _extract_time_range(text: str) -> Optional[Tuple[int, int, int, int]]:
+    """
+    Extract a time range like '900 - 1300' or '0900-1300'. Returns (start_hour, start_min, end_hour, end_min).
+    """
+    m = re.search(r"\b(\d{1,2})(\d{2})\s*[-~–—]\s*(\d{1,2})(\d{2})\b", text)
+    if not m:
+        return None
+    sh, sm, eh, em = map(int, m.groups())
+    # Validate hour/minute bounds
+    if not (0 <= sh <= 23 and 0 <= eh <= 23 and 0 <= sm <= 59 and 0 <= em <= 59):
+        return None
+    return sh, sm, eh, em
 
 def create_calendar_event(
     summary: str,
