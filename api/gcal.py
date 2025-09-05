@@ -227,3 +227,43 @@ def create_calendar_event(
     return event
 
 
+def list_events_next_days(days: int = 30, calendar_id: Optional[str] = None, timezone_str: str = "Asia/Taipei"):
+    """
+    Return events in the next `days` days as a list of dicts: {start, end, summary, is_all_day}.
+    """
+    if calendar_id is None:
+        calendar_id = os.getenv(
+            "GOOGLE_CALENDAR_ID",
+            "example.com_aaaaaaaaaaaaaaaaaaaaaaaaaa@group.calendar.google.com",
+        )
+
+    now = dt.datetime.now(dt.timezone.utc)
+    end = now + dt.timedelta(days=days)
+
+    service = get_calendar_service()
+    events_result = service.events().list(
+        calendarId=calendar_id,
+        timeMin=now.isoformat(),
+        timeMax=end.isoformat(),
+        singleEvents=True,
+        orderBy="startTime",
+    ).execute()
+
+    items = events_result.get("items", [])
+    results = []
+    for e in items:
+        start = e.get("start", {})
+        endt = e.get("end", {})
+        summary = e.get("summary", "(無標題)")
+        is_all_day = "date" in start
+        start_str = start.get("dateTime") or start.get("date")
+        end_str = endt.get("dateTime") or endt.get("date")
+        results.append({
+            "summary": summary,
+            "start": start_str,
+            "end": end_str,
+            "is_all_day": is_all_day,
+        })
+    return results
+
+

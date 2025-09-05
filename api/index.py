@@ -10,7 +10,7 @@ from linebot.models import MessageEvent, TextMessage, \
 from api.flex_messages import create_all_counter_message
 from api.gsheet import update_gsheet_checkbox_batch
 from api.db import User
-from api.gcal import parse_event_text, create_calendar_event
+from api.gcal import parse_event_text, create_calendar_event, list_events_next_days
 
 # from dotenv import load_dotenv
 # load_dotenv()
@@ -139,6 +139,8 @@ def handle_group_text_message(event):
         return True
     if handle_help_command(event):
         return True
+    if handle_list_events(event):
+        return True
     return False
 
 
@@ -149,7 +151,37 @@ def handle_user_text_message(event):
         return True
     if handle_help_command(event):
         return True
+    if handle_list_events(event):
+        return True
     return False
+
+
+def handle_list_events(event):
+    if event.message.text != "活動列表":
+        return False
+    try:
+        events = list_events_next_days(30)
+        if not events:
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text="未找到未來30天的活動。"))
+            return True
+        lines = ["未來30天活動："]
+        for e in events[:20]:
+            if e["is_all_day"]:
+                lines.append(f"- {e['start']}：{e['summary']}")
+            else:
+                # format ISO strings to yyyy/mm/dd hh:mm
+                try:
+                    start = e['start']
+                    dtobj = datetime.datetime.fromisoformat(start.replace('Z', '+00:00'))
+                    lines.append(f"- {dtobj.strftime('%Y/%m/%d %H:%M')}：{e['summary']}")
+                except Exception:
+                    lines.append(f"- {e['start']}：{e['summary']}")
+        text = "\n".join(lines)
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=text))
+        return True
+    except Exception as exc:
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=f"取得活動失敗：{exc}"))
+        return True
 
 # domain root
 @app.route('/')
