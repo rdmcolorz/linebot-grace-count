@@ -325,9 +325,8 @@ def handle_gsheet_record(event, parsed_data, user_id, group_id):
         "G": "家受訪",
         'H': '小排',
         'I': '傳福音',
-        'J': '生命讀經',
-        'K': '天天生命讀經',
-        'L': '個人禱告'
+        'J': '一分鐘禱告',
+        'K': '個人禱告'
     }
 
     # if group_id:
