@@ -1,7 +1,7 @@
 from linebot.models import FlexSendMessage, BubbleContainer, \
     BoxComponent, TextComponent, ButtonComponent, PostbackAction
 
-def create_all_counter_message(event_name, event_data, state):
+def create_all_counter_message(event_name, event_data, state, related_names=None):
     all_contents = [TextComponent(text=event_name, weight='bold', size='lg')]
 
     for box in event_data:
@@ -33,6 +33,32 @@ def create_all_counter_message(event_name, event_data, state):
                 layout='horizontal',
                 contents=contents,
                 spacing='md',
+            )
+        )
+    # Related members quick actions (submit to all related)
+    if related_names:
+        rel_buttons = []
+        for name in related_names:
+            rel_buttons.append(
+                ButtonComponent(
+                    action=PostbackAction(
+                        label=name,
+                        data=f'action:r&state:{state}&rel:all',
+                        display_text=f'為 {name} 及相關成員送出'
+                    ),
+                    style='secondary',
+                    adjust_mode='shrink-to-fit',
+                    scaling=True
+                )
+            )
+        all_contents.append(
+            TextComponent(text='相關成員', size='sm', color='#888888')
+        )
+        all_contents.append(
+            BoxComponent(
+                layout='horizontal',
+                contents=rel_buttons,
+                spacing='md'
             )
         )
     all_contents.append(
