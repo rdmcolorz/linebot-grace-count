@@ -34,7 +34,12 @@ def parse_data(input_string):
     result = {}
 
     for pair in pairs:
-        key, value = pair.split(':')
+        if not pair:
+            continue
+        parts = pair.split(':', 1)
+        if len(parts) != 2:
+            continue
+        key, value = parts
         result[key] = value
     return result
 
@@ -100,7 +105,7 @@ def handle_checkin_command(event):
     related_names = get_related_names_for(name)
     line_bot_api.reply_message(
         event.reply_token,
-        create_all_counter_message('週點名', EVENT_DATA, state="", related_names=related_names)
+        create_all_counter_message('週點名', EVENT_DATA, state="", related_names=related_names, selected_related=[])
     )
     print(datetime.datetime.now(), "replied message")
     return True
@@ -287,24 +292,28 @@ def handle_postback(event):
         handle_gsheet_record(event, parsed_data, user_id, group_id)
     elif action_type == 'n':
         next_question(event, parsed_data)
+    elif action_type == 's':
+        toggle_related(event, parsed_data)
 
 
 def next_question(event, parsed_data):
     state = parsed_data.get('state')
+    rels = parsed_data.get('rels') or ""
+    selected_related = [r for r in rels.split(',') if r]
     user_id = event.source.user_id
     profile = line_bot_api.get_profile(user_id)
     name = profile.display_name
     related_names = get_related_names_for(name)
     line_bot_api.reply_message(
         event.reply_token,
-        create_all_counter_message('週點名', EVENT_DATA, state, related_names=related_names)
+        create_all_counter_message('週點名', EVENT_DATA, state, related_names=related_names, selected_related=selected_related)
     )
     return
 
 
 def handle_gsheet_record(event, parsed_data, user_id, group_id):
     state = parsed_data.get('state')
-    rel = parsed_data.get('rel')
+    rels = parsed_data.get('rels') or ""
 
     event_map = {
         "C": "主日聚會",
@@ -326,11 +335,8 @@ def handle_gsheet_record(event, parsed_data, user_id, group_id):
     profile = line_bot_api.get_profile(user_id)
 
     user_name = profile.display_name
-    target_names = [user_name]
-    if rel == 'all':
-        related = get_related_names_for(user_name)
-        if related:
-            target_names = [user_name] + related
+    selected_related = [r for r in rels.split(',') if r]
+    target_names = [user_name] + selected_related
 
     for tname in target_names:
         update_gsheet_checkbox_batch(tname, state)
@@ -339,6 +345,26 @@ def handle_gsheet_record(event, parsed_data, user_id, group_id):
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=f"{names_str} 於 {checked_events} 簽到了～")
+    )
+
+
+def toggle_related(event, parsed_data):
+    state = parsed_data.get('state') or ""
+    rels = parsed_data.get('rels') or ""
+    target = parsed_data.get('target') or ""
+    sel = [r for r in rels.split(',') if r]
+    if target in sel:
+        sel = [r for r in sel if r != target]
+    else:
+        sel.append(target)
+
+    user_id = event.source.user_id
+    profile = line_bot_api.get_profile(user_id)
+    name = profile.display_name
+    related_names = get_related_names_for(name)
+    line_bot_api.reply_message(
+        event.reply_token,
+        create_all_counter_message('週點名', EVENT_DATA, state, related_names=related_names, selected_related=sel)
     )
 
 
