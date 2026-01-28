@@ -10,15 +10,19 @@ def create_all_counter_message(event_name, event_data, state, related_names=None
         contents = []
         for event_id, event in box.items():
             if event_id in state:
-                style='primary'
+                # Already selected - clicking will deselect (remove from state)
+                style = 'primary'
+                new_state = state.replace(event_id, '')
             else:
-                style='secondary'
+                # Not selected - clicking will select (add to state)
+                style = 'secondary'
+                new_state = state + event_id
             contents.append(
                 ButtonComponent(
                     action=PostbackAction(
                         label=f'{event}',
-                        data=f'action:n&state:{state + event_id}&rels:{rels_str}',
-                        display_text=f'{event} 簽到',
+                        data=f'action:n&state:{new_state}&rels:{rels_str}',
+                        display_text=f'{event}',
                         flex=len(event),
                         margin='xs',
                         padding='xs',
@@ -55,7 +59,6 @@ def create_all_counter_message(event_name, event_data, state, related_names=None
                         display_text=f'選擇 {name}'
                     ),
                     style='primary' if is_selected else 'secondary',
-                    color='#00C300' if is_selected else None,
                     adjust_mode='shrink-to-fit',
                     scaling=True
                 )
