@@ -105,7 +105,7 @@ def handle_checkin_command(event):
     related_names = get_related_names_for(name)
     line_bot_api.reply_message(
         event.reply_token,
-        create_all_counter_message('週點名', EVENT_DATA, state="", related_names=related_names, selected_related=[])
+        create_all_counter_message('週點名', EVENT_DATA, state="", related_names=related_names, selected_related=[name], self_name=name)
     )
     print(datetime.datetime.now(), "replied message")
     return True
@@ -304,9 +304,11 @@ def next_question(event, parsed_data):
     profile = line_bot_api.get_profile(user_id)
     name = profile.display_name
     related_names = get_related_names_for(name)
+    if not selected_related:
+        selected_related = [name]
     line_bot_api.reply_message(
         event.reply_token,
-        create_all_counter_message('週點名', EVENT_DATA, state, related_names=related_names, selected_related=selected_related)
+        create_all_counter_message('週點名', EVENT_DATA, state, related_names=related_names, selected_related=selected_related, self_name=name)
     )
     return
 
@@ -336,7 +338,9 @@ def handle_gsheet_record(event, parsed_data, user_id, group_id):
 
     user_name = profile.display_name
     selected_related = [r for r in rels.split(',') if r]
-    target_names = [user_name] + selected_related
+    if not selected_related:
+        selected_related = [user_name]
+    target_names = selected_related
 
     for tname in target_names:
         update_gsheet_checkbox_batch(tname, state)
@@ -364,7 +368,7 @@ def toggle_related(event, parsed_data):
     related_names = get_related_names_for(name)
     line_bot_api.reply_message(
         event.reply_token,
-        create_all_counter_message('週點名', EVENT_DATA, state, related_names=related_names, selected_related=sel)
+        create_all_counter_message('週點名', EVENT_DATA, state, related_names=related_names, selected_related=sel, self_name=name)
     )
 
 

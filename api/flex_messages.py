@@ -1,7 +1,7 @@
 from linebot.models import FlexSendMessage, BubbleContainer, \
     BoxComponent, TextComponent, ButtonComponent, PostbackAction
 
-def create_all_counter_message(event_name, event_data, state, related_names=None, selected_related=None):
+def create_all_counter_message(event_name, event_data, state, related_names=None, selected_related=None, self_name=None):
     all_contents = [TextComponent(text=event_name, weight='bold', size='lg')]
     selected_related = selected_related or []
     rels_str = ",".join(selected_related) if selected_related else ""
@@ -37,10 +37,15 @@ def create_all_counter_message(event_name, event_data, state, related_names=None
                 spacing='md',
             )
         )
-    # Related members quick actions (submit to all related)
-    if related_names:
+    # Related members quick actions (toggle selection)
+    if related_names is not None or self_name is not None:
+        participants = []
+        if self_name:
+            participants.append(self_name)
+        if related_names:
+            participants.extend(related_names)
         rel_buttons = []
-        for name in related_names:
+        for name in participants:
             is_selected = name in selected_related
             rel_buttons.append(
                 ButtonComponent(
