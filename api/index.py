@@ -9,6 +9,7 @@ from linebot.models import MessageEvent, TextMessage, \
     ButtonsTemplate, URIAction
 from api.flex_messages import create_all_counter_message
 from api.gsheet import update_gsheet_checkbox_batch
+from api.gsheet import get_related_names_for
 from api.db import User
 from api.gcal import parse_event_text, create_calendar_event, list_events_next_days
 
@@ -93,9 +94,13 @@ def handle_plan_calendar_in_group(event):
 def handle_checkin_command(event):
     if event.message.text != "點名":
         return False
+    user_id = event.source.user_id
+    profile = line_bot_api.get_profile(user_id)
+    name = profile.display_name
+    related_names = get_related_names_for(name)
     line_bot_api.reply_message(
         event.reply_token,
-        create_all_counter_message('週點名', EVENT_DATA, state="")
+        create_all_counter_message('週點名', EVENT_DATA, state="", related_names=related_names)
     )
     print(datetime.datetime.now(), "replied message")
     return True
@@ -286,15 +291,20 @@ def handle_postback(event):
 
 def next_question(event, parsed_data):
     state = parsed_data.get('state')
+    user_id = event.source.user_id
+    profile = line_bot_api.get_profile(user_id)
+    name = profile.display_name
+    related_names = get_related_names_for(name)
     line_bot_api.reply_message(
         event.reply_token,
-        create_all_counter_message('週點名', EVENT_DATA, state)
+        create_all_counter_message('週點名', EVENT_DATA, state, related_names=related_names)
     )
     return
 
 
 def handle_gsheet_record(event, parsed_data, user_id, group_id):
     state = parsed_data.get('state')
+    rel = parsed_data.get('rel')
 
     event_map = {
         "C": "主日聚會",
@@ -316,11 +326,19 @@ def handle_gsheet_record(event, parsed_data, user_id, group_id):
     profile = line_bot_api.get_profile(user_id)
 
     user_name = profile.display_name
-    update_gsheet_checkbox_batch(user_name, state)
+    target_names = [user_name]
+    if rel == 'all':
+        related = get_related_names_for(user_name)
+        if related:
+            target_names = [user_name] + related
+
+    for tname in target_names:
+        update_gsheet_checkbox_batch(tname, state)
     checked_events = ', '.join([event_map[id] for id in state])
+    names_str = '、'.join(target_names)
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=f"{user_name} 於 {checked_events} 簽到了～")
+        TextSendMessage(text=f"{names_str} 於 {checked_events} 簽到了～")
     )
 
 
